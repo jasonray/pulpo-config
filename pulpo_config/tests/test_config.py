@@ -126,7 +126,7 @@ class TestConfig(unittest.TestCase):
 
     # disable yapf so it does not re-format the param test
     # yapf: disable
-    @parameterized.expand((            
+    @parameterized.expand((
          (True, True),
          ("True", True),
          ("true", True),
@@ -149,4 +149,3 @@ class TestConfig(unittest.TestCase):
         options = {}
         config = Config(options=options)
         self.assertEqual(config.getAsBool('k', default), expected_result)
-
