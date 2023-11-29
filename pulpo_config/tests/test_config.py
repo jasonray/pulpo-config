@@ -98,3 +98,29 @@ class TestConfig(unittest.TestCase):
         options['k'] = input
         config = Config(options=options)
         self.assertEqual(config.getAsBool('k'), expected_result)
+
+    # disable yapf so it does not re-format the param test
+    # yapf: disable
+    @parameterized.expand((
+         (True, True),
+         ("True", True),
+         ("true", True),
+         ("T", True),
+         ("t", True),
+         ("1", True),
+         (1, True),
+         (False, False),
+         ("False", False),
+         ("false", False),
+         ("F", False),
+         ("f", False),
+         ("0", False),
+         (0, False),
+         (2, False),
+         ("donkey", False),
+    ))
+    # yapf: enable
+    def test_config_get_bool_with_default(self, default, expected_result):
+        options = {}
+        config = Config(options=options)
+        self.assertEqual(config.getAsBool('k', default), expected_result)
