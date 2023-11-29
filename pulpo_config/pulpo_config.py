@@ -59,14 +59,14 @@ class Config():
             value = default_value
 
         return value
-    
+
     def getAsBool(self, key: str, default_value: typing.Any = None) -> bool:
         value_raw = self.get(key=key, default_value=default_value)
         value = None
         true_values = [True, 'TRUE', 'T', '1', 1]
         if isinstance(value_raw, str):
             value_raw = value_raw.upper()
-        value =  value_raw  in true_values
+        value = value_raw in true_values
         return value
 
     # support key=a.b.c where it will create intermediate dictionaries
