@@ -72,6 +72,8 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/t/k/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/t/k/fqa')
 
+    # disable yapf so it does not re-format the param test
+    # yapf: disable
     @parameterized.expand((
          (True, True),
          ("True", True),
@@ -90,8 +92,8 @@ class TestConfig(unittest.TestCase):
          (2, False),
          ("donkey", False),
     ))
-
-    def test_config_get_bool(self, input, expected_result ):
+    # yapf: enable
+    def test_config_get_bool(self, input, expected_result):
         options = {}
         options['k'] = input
         config = Config(options=options)
