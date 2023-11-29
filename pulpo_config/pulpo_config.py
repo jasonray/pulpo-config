@@ -73,8 +73,8 @@ class Config():
         value_raw = self.get(key=key, default_value=default_value)
         try:
             value = int(value_raw)
-        except:
-            raise Exception(f'Invalid config value (expected numeric value) [key={key}][value={value_raw}]')
+        except Exception as ex:
+            raise Exception(f'Invalid config value (expected numeric value) [key={key}][value={value_raw}]') from ex
         return value
 
     # support key=a.b.c where it will create intermediate dictionaries
