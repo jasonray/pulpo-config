@@ -98,3 +98,29 @@ class TestConfig(unittest.TestCase):
         options['k'] = input
         config = Config(options=options)
         self.assertEqual(config.getAsBool('k'), expected_result)
+
+
+    # disable yapf so it does not re-format the param test
+    # yapf: disable
+    @parameterized.expand((
+         (1, 1),
+         (10, 10),
+         (1.0, 1, False),
+         ("1", 1),
+         ("10", 10),
+         ("1.0", None, True),
+         ("xyz", None, True),
+         ("", None, True)
+    ))
+    # yapf: enable
+    def test_config_get_int(self, input, expected_result, expected_error = False):
+        print(f'test_config_get_int [input={input}][expected={expected_result}][expect error={expected_error}]')
+        options = {}
+        options['k'] = input
+        config = Config(options=options)
+
+        if expected_error:
+            with pytest.raises(Exception):
+                config.getAsInt('k')
+        else:
+            self.assertEqual(config.getAsInt('k'), expected_result)
