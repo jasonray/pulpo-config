@@ -69,6 +69,14 @@ class Config():
         value = value_raw in true_values
         return value
 
+    def getAsInt(self, key: str, default_value: int = None) -> int:
+        value_raw = self.get(key=key, default_value=default_value)
+        try:
+            value = int(value_raw)
+        except Exception as ex:
+            raise Exception(f'Invalid config value (expected numeric value) [key={key}][value={value_raw}]') from ex
+        return value
+
     # support key=a.b.c where it will create intermediate dictionaries
     def set(self, key: str, value: typing.Any):
         print('options.set')
