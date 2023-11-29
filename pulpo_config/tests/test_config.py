@@ -1,5 +1,7 @@
 import unittest
 from pulpo_config import Config
+from parameterized import parameterized
+import pytest
 
 
 class TestConfig(unittest.TestCase):
@@ -69,3 +71,28 @@ class TestConfig(unittest.TestCase):
 
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/t/k/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/t/k/fqa')
+
+    @parameterized.expand((
+         (True, True),
+         ("True", True),
+         ("true", True),
+         ("T", True),
+         ("t", True),
+         ("1", True),
+         (1, True),
+         (False, False),
+         ("False", False),
+         ("false", False),
+         ("F", False),
+         ("f", False),
+         ("0", False),
+         (0, False),
+         (2, False),
+         ("donkey", False),
+    ))
+
+    def test_config_get_bool(self, input, expected_result ):
+        options = {}
+        options['k'] = input
+        config = Config(options=options)
+        self.assertEqual(config.getAsBool('k'), expected_result)
