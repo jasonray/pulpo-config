@@ -18,7 +18,13 @@ class Config():
             self.__options = options.__options
 
     def __str__(self):
+        return self.to_string()
+
+    def to_string(self):
         return str(self.__options)
+
+    def to_json(self):
+        return json.dumps(self.__options)
 
     def process_args(self, args: dict):
         if args:
