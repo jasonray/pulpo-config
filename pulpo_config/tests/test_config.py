@@ -154,12 +154,14 @@ class TestConfig(unittest.TestCase):
         config = Config()
         config.set('k', 'v')
         self.assertEqual(str(config), "{'k': 'v'}")
+        self.assertEqual(config.to_string(), "{'k': 'v'}")
 
     def test_to_string_two(self):
         config = Config()
         config.set('k1', 'v1')
         config.set('k2', 'v2')
         self.assertEqual(str(config), "{'k1': 'v1', 'k2': 'v2'}")
+        self.assertEqual(config.to_string(), "{'k1': 'v1', 'k2': 'v2'}")
 
     def test_to_string_nested(self):
         config = Config()
@@ -169,3 +171,13 @@ class TestConfig(unittest.TestCase):
         config.set('k.k4', 'v4')
         config.set('kk.k5', 'v5')
         self.assertEqual(str(config), "{'k1': 'v1', 'k2': 'v2', 'k': {'k3': 'v3', 'k4': 'v4'}, 'kk': {'k5': 'v5'}}")
+        self.assertEqual(config.to_string(), "{'k1': 'v1', 'k2': 'v2', 'k': {'k3': 'v3', 'k4': 'v4'}, 'kk': {'k5': 'v5'}}")
+
+    def test_to_json(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('k2', 'v2')
+        config.set('k.k3', 'v3')
+        config.set('k.k4', 'v4')
+        config.set('kk.k5', 'v5')
+        self.assertEqual(config.to_json(), '{"k1": "v1", "k2": "v2", "k": {"k3": "v3", "k4": "v4"}, "kk": {"k5": "v5"}}')
