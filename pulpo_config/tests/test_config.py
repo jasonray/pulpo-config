@@ -149,3 +149,23 @@ class TestConfig(unittest.TestCase):
         options = {}
         config = Config(options=options)
         self.assertEqual(config.getAsBool('k', default), expected_result)
+
+    def test_to_string_single(self):
+        config = Config()
+        config.set('k', 'v')
+        self.assertEqual(str(config), "{'k': 'v'}")
+
+    def test_to_string_two(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('k2', 'v2')
+        self.assertEqual(str(config), "{'k1': 'v1', 'k2': 'v2'}")
+
+    def test_to_string_nested(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('k2', 'v2')
+        config.set('k.k3', 'v3')
+        config.set('k.k4', 'v4')
+        config.set('kk.k5', 'v5')
+        self.assertEqual(str(config), "{'k1': 'v1', 'k2': 'v2', 'k': {'k3': 'v3', 'k4': 'v4'}, 'kk': {'k5': 'v5'}}")

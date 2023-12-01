@@ -17,6 +17,9 @@ class Config():
         elif isinstance(options, Config):
             self.__options = options.__options
 
+    def __str__(self):
+        return str(self.__options)
+
     def process_args(self, args: dict):
         if args:
             print(f'processing args [{args}]')
