@@ -213,10 +213,18 @@ class TestConfig(unittest.TestCase):
         config = Config(options=options)
         self.assertEqual(config.get('k'), None)
 
-    def test_config_with_dict_is_immutable(self):
+    def test_config_with_dict_is_copy_1_level(self):
         options = {'k': 'v'}
         config = Config(options=options)
         self.assertEqual(config.get('k'), 'v')
 
         options['k']='v2'
         self.assertEqual(config.get('k'), 'v')
+
+    def test_config_with_dict_is_copy_2_level(self):
+        options = {"database": {"host": "localhost", "port": 3306}}
+        config = Config(options=options)
+        self.assertEqual(config.get('database.host'), 'localhost')
+
+        options['database']['host']='127.0.0.1'
+        self.assertEqual(config.get('database.host'), 'localhost')
