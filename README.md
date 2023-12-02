@@ -32,23 +32,30 @@ The `Config` class provides a robust and flexible way to manage configuration se
 
 # Example Usage
 ``` python
-from config import Config
+from pulpo_config import Config
 
-# Initialize with a dictionary
+# Can load values manually through a dictionary..
 config = Config(options={"database": {"host": "localhost", "port": 3306}})
 
-# Load options from a JSON file
+# Or can load values manually..
+config.set("api_key", "your-api-key")
+config.set('database.host', 'localhost')
+
+# Or can load options from a JSON config file
 config = Config(json_file_path="config.json")
+
+# Or can load from command line parameters
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--debug_mode', type=str)
+config.process_args(parser)
+
+# Retrieve a simple configuration value
+api_key = config.get("api_key")
+
+# Retrieve a simple configuration value
+is_debug_mode = config.getAsBool("debug_mode")
 
 # Retrieve a nested configuration value
 db_host = config.get("database.host")
-
-# Process command-line arguments
-config.process_args({"debug_mode": True})
-
-# Get a value as a boolean
-is_debug_mode = config.getAsBool("debug_mode")
-
-# Set a new configuration value
-config.set("api_key", "your-api-key")
 ```
