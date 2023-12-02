@@ -71,7 +71,8 @@ In this library, I use the following terms:
 `Config` can be initialized with a dictionary or json formatted config file
 * `Config(options: dict = None, json_file_path: str = None)`
   * With no parameters, will create a `Config` with no values
-  * If `dict` supplied, will initialize with the supplied key-value pairs.  Note that this does support nest key-value structures
+  * If `options` supplied, will initialize with the supplied key-value pairs.  Note that this does support nest key-value structures.
+  * What if `options` is modified after being used to initialize `Config`?  Read [here]([url](https://github.com/jasonray/pulpo-config/issues/26)).
   * If `json_file_path` will load values from json formatted config file
  
 ## process_args
