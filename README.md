@@ -30,7 +30,7 @@ The `Config` class provides a robust and flexible way to manage configuration se
 * `Compatibility`: Works seamlessly with common Python libraries like `argparse`.
 * `Extensibility`: Customize and extend for more complex use cases or specific project needs.
 
-# Example Usage
+# Basic Usage
 ``` python
 from pulpo_config import Config
 
@@ -58,4 +58,41 @@ is_debug_mode = config.getAsBool("debug_mode")
 
 # Retrieve a nested configuration value
 db_host = config.get("database.host")
+```
+
+# API
+
+## Constructor
+`Config` can be initialized with a dictionary or json formatted config file
+* `Config(options: dict = None, json_file_path: str = None)`
+  * With no parameters, will create a `Config` with no values
+  * If `dict` supplied, will initialize with the supplied key/value pairs.  Note that this does support nest key/value structures
+  * If `json_file_path` will load values from json formatted config file
+ 
+## process_args
+Passing a standard `argparser` or `argparser.namepspace` will integrate command line params into the config values
+* `process_args(self, args: dict)`
+  * `args` can be either `argparser` or `argparser.namepspace` (the output from `argparser.parse()`
+ 
+## Set
+* `set(key: str, value: typing.Any)`
+  *  Will set key=value
+  *  `value` can be of any type, and would be returned as set
+  *  To set a nested value (such as if database option has child option of host), use a `.`: `config.set('database.host', 'localhost')`
+  *  If nested value parent(s) (such as database in the above example) does not exist, those parent(s) will be created.
+
+## Get
+* `get(key: str, default_value: typing.Any = None)`
+  * Will return the value associated the key
+  * If there is not a set value, the the `default_value` is returned
+  * To get a nested value, use a `.`: `config.get('database.host')`
+* There are also specialized get methods to cast values to specific types
+* `getAsBool(self, key: str, default_value: typing.Any = None) -> bool`
+* `getAsInt(self, key: str, default_value: int = None) -> int`
+
+# Installation
+Pulpo-config is avaiable on PyPi: https://pypi.org/project/pulpo-config/  
+Install using
+```
+pip install pulpo-config
 ```
