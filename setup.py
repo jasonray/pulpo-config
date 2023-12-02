@@ -7,7 +7,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(name='pulpo-config',
-      version='1.2.0',
+      version='1.3.0',
       author='Mighty Pulpo',
       author_email='jayray.net@gmail.com',
       description='Simple configuration library',
