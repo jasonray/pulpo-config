@@ -212,3 +212,11 @@ class TestConfig(unittest.TestCase):
         options['k'] = '$ENV.pulpo-invalid-key'
         config = Config(options=options)
         self.assertEqual(config.get('k'), None)
+
+    def test_config_with_dict_is_immutable(self):
+        options = {'k': 'v'}
+        config = Config(options=options)
+        self.assertEqual(config.get('k'), 'v')
+
+        options['k']='v2'
+        self.assertEqual(config.get('k'), 'v')

@@ -14,7 +14,7 @@ class Config():
             options = {}
 
         if isinstance(options, dict):
-            self.__options = options
+            self.__options = options.copy()
         elif isinstance(options, Config):
             self.__options = options.__options
 
