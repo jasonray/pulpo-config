@@ -1,3 +1,4 @@
+import os
 import unittest
 from pulpo_config import Config
 from parameterized import parameterized
@@ -181,3 +182,33 @@ class TestConfig(unittest.TestCase):
         config.set('k.k4', 'v4')
         config.set('kk.k5', 'v5')
         self.assertEqual(config.to_json(), '{"k1": "v1", "k2": "v2", "k": {"k3": "v3", "k4": "v4"}, "kk": {"k5": "v5"}}')
+
+    def test_config_get_env_var(self):
+        os.environ['pulpo-k'] = 'v'
+
+        options = {}
+        options['k'] = '$ENV.pulpo-k'
+        config = Config(options=options)
+        self.assertEqual(config.get('k'), 'v')
+
+    def test_config_get_env_var_invalid_key(self):
+        os.environ['pulpo-k'] = 'v'
+
+        options = {}
+        options['k'] = '$ENV.'
+        config = Config(options=options)
+        self.assertEqual(config.get('k'), None)
+
+    def test_config_get_env_var_invalid_prefix(self):
+        os.environ['pulpo-k'] = 'v'
+
+        options = {}
+        options['k'] = '$ENV'
+        config = Config(options=options)
+        self.assertEqual(config.get('k'), '$ENV')
+
+    def test_config_get_env_var_invalid_key(self):
+        options = {}
+        options['k'] = '$ENV.pulpo-invalid-key'
+        config = Config(options=options)
+        self.assertEqual(config.get('k'), None)
