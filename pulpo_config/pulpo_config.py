@@ -1,6 +1,7 @@
 import typing
 import json
 import argparse
+import os
 
 
 class Config():
@@ -67,6 +68,23 @@ class Config():
         if not value:
             value = default_value
 
+        value = self._get_handle_env(value)
+
+        return value
+
+    def _get_handle_env(self, value):
+        print(f'_get_handle_env 1 => {value=}')
+        Environment_Variable_Prefix = '$ENV.'
+        if value:
+            print(f'_get_handle_env 2 => {value=}')
+            if isinstance(value, str):
+                print(f'_get_handle_env 3 => {value=}')
+                if value.startswith(Environment_Variable_Prefix):
+                    print(f'_get_handle_env 4 => {value=}')
+                    env_var_key = value[len(Environment_Variable_Prefix):]
+                    value = os.getenv(env_var_key)
+                    print(f'_get_handle_env 5 => {value=}')
+        print(f'_get_handle_env 6 => {value=}')
         return value
 
     def getAsBool(self, key: str, default_value: typing.Any = None) -> bool:
