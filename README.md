@@ -90,6 +90,88 @@ Passing a standard `argparser` or `argparser.namepspace` will integrate command 
 * `getAsBool(self, key: str, default_value: typing.Any = None) -> bool`
 * `getAsInt(self, key: str, default_value: int = None) -> int`
 
+# More Usage Patterns
+
+## Manually loading from dictionary
+``` python
+from pulpo_config import Config
+config = Config(options={"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
+api_key = config.get("api_key")    
+host = config.get("database.host")    
+```
+
+## Manually setting config
+``` python
+from pulpo_config import Config
+config = Config()
+config.set("api_key", "your-api-key")
+config.set("database.host", "localhost")
+config.set("database.port", 3306)
+api_key = config.get("api_key")
+host = config.get("database.host")    
+```
+
+## Loading from json config file
+Most use cases will utilize a config file to store options.  Below is a sample config
+``` json
+{
+    "api_key": "your-api-key",
+    "database": {
+        "host": "localhost",
+        "port": 3306
+    }
+}
+```
+Load this config file named `config.json` using the following:
+```
+from pulpo_config import Config
+config = Config(json_file_path="config.json")
+api_key = config.get("api_key")
+host = config.get("database.host")    
+```
+
+## Loading from command line parameters
+In a scenario in which you are using commandline params with `argparser`, use the following:
+```
+from pulpo_config import Config
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--api_key', type=str)
+config.process_args(parser)
+api_key = config.get("api_key")
+```
+
+## Get bool values
+The `getAsBool` will cast the value to a bool.  For this purpose, the following are considered `true`: `[True, 'TRUE', 'T', '1', 1]` (case-insensitive)
+```
+if config.getAsBool("enable_feature_x"):
+   # do stuff
+```
+
+## Get in values
+The `getAsInt` will cast the value to an int.
+```
+port = config.getAsInt("database.host")
+```
+
+## Extending the Config class
+For many application, I prefer to create an application-specific config class, extending from the provided config class.  Example:
+
+``` python
+class MyApplicationConfig(Config):
+
+    def __init__(self, options: dict = None, json_file_path: str = None):
+        super().__init__(options=options, json_file_path=json_file_path)
+
+    @property
+    def api_key(self: Config) -> str:
+        return self.get('api_key')
+
+    @property
+    def debug_mode(self: Config) -> str:
+        return self.getAsBool('debug_mode', False)
+```
+
 # Installation
 Pulpo-config is avaiable on PyPi: https://pypi.org/project/pulpo-config/  
 Install using
