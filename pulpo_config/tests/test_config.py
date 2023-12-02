@@ -236,3 +236,12 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(len(config.keys()), 1)
         self.assertEqual(config.keys(), ['k'])
         self.assertEqual(config.items(), {'k': 'v'})
+
+    def test_config_get_keys_two(self):
+        options = {}
+        options['k1'] = 'v1'
+        options['k2'] = 'v2'
+        config = Config(options)
+        self.assertEqual(len(config.keys()), 1)
+        self.assertEqual(config.keys(), ['k1','k2'])
+        self.assertEqual(config.items(), {'k1': 'v1', 'k2': 'v2'})
