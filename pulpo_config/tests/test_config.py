@@ -228,3 +228,11 @@ class TestConfig(unittest.TestCase):
 
         options['database']['host'] = '127.0.0.1'
         self.assertEqual(config.get('database.host'), 'localhost')
+
+    def test_config_get_keys_one(self):
+        options = {}
+        options['k'] = 'v'
+        config = Config(options)
+        self.assertEqual(len(config.keys()), 1)
+        self.assertEqual(config.keys(), ['k'])
+        self.assertEqual(config.items(), {'k': 'v'})

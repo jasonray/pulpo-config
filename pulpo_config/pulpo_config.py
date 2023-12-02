@@ -22,6 +22,14 @@ class Config():
     def __str__(self):
         return self.to_string()
 
+    def keys(self):
+        return list(self.__options)
+
+    def items(self, make_copy: bool = False):
+        if make_copy:
+            copy.deepcopy(self.__options)
+        return self.__options
+
     def to_string(self):
         return str(self.__options)
 
