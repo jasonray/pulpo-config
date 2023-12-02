@@ -2,7 +2,7 @@ import typing
 import json
 import argparse
 import os
-
+import copy
 
 class Config():
     __options = None
@@ -14,7 +14,7 @@ class Config():
             options = {}
 
         if isinstance(options, dict):
-            self.__options = options.copy()
+            self.__options = copy.deepcopy (options )
         elif isinstance(options, Config):
             self.__options = options.__options
 
