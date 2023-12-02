@@ -12,23 +12,23 @@ The `Config` class provides a robust and flexible way to manage configuration se
 * Automatically loads options from a file if a file path is provided.
 ## Flexible Option Retrieval
 * Retrieve configuration values with support for nested keys.
-* Environment variable substitution for values starting with $ENV.
+* Environment variable substitution for values starting with `$ENV`.
 ## Command-Line Argument Processing
-* Seamlessly integrates with argparse to update configurations from command-line arguments.
-* Accepts arguments as a dictionary or argparse.Namespace object.
+* Seamlessly integrates with `argparse` to update configurations from command-line arguments.
+* Accepts arguments as a dictionary or `argparse.Namespace` object.
 ## JSON and String Representation
 * Convert configurations to a JSON string or a standard string representation for easy debugging and logging.
 ## Specialized Value Retrieval
-* Get configuration values as boolean or integer types with getAsBool and getAsInt.
+* Get configuration values as boolean or integer types with `getAsBool` and `getAsInt`.
 * Handles type conversion and validation internally.
 ## Dynamic Configuration Setting
 * Set configuration values with support for nested keys.
 * Automatically creates intermediate dictionaries if needed.
 # Benefits
-* Flexibility: Easily manage configurations with varying levels of complexity.
-* Simplicity: Streamline configuration management without extensive boilerplate code.
-* Compatibility: Works seamlessly with common Python libraries like argparse.
-* Extensibility: Customize and extend for more complex use cases or specific project needs.
+* `Flexibility`: Easily manage configurations with varying levels of complexity.
+* `Simplicity`: Streamline configuration management without extensive boilerplate code.
+* `Compatibility`: Works seamlessly with common Python libraries like `argparse`.
+* `Extensibility`: Customize and extend for more complex use cases or specific project needs.
 
 # Example Usage
 ``` python
