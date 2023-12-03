@@ -53,13 +53,13 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(config.get('k.k2b.k3.x'))
         self.assertIsNone(config.get('k.k2b.x.x'))
 
-    def test_load_config_from_file(self):
+    def test_load_config_from_json_file(self):
         config = Config(json_file_path='./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
 
-    def test_load_config_from_file_then_apply_args(self):
+    def test_load_config_from_json_file_then_apply_args(self):
         config = Config(json_file_path='./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
@@ -72,6 +72,12 @@ class TestConfig(unittest.TestCase):
 
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/t/k/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/t/k/fqa')
+
+    def test_load_config_from_yaml_file(self):
+        config = Config(yaml_file_path='./pulpo_config/tests/test-data/sample-config.yaml')
+        self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
+        self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
+        self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
 
     # disable yapf so it does not re-format the param test
     # yapf: disable
