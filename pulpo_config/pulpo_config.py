@@ -3,14 +3,17 @@ import json
 import argparse
 import os
 import copy
+import yaml
 
 
 class Config():
     __options = None
 
-    def __init__(self, options: dict = None, json_file_path: str = None):
+    def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):
         if not options and json_file_path:
-            options = self._load_options_from_file(json_file_path=json_file_path)
+            options = self._load_options_from_json_file(json_file_path=json_file_path)
+        elif not options and yaml_file_path:
+            options = self._load_options_from_yaml_file(yaml_file_path=yaml_file_path)
         elif not options:
             options = {}
 
@@ -36,16 +39,21 @@ class Config():
                 args = vars(args)
 
             for arg in args:
-                print(f'processing args [arg={arg}]')
                 # value = getattr(args, arg)
                 value = args.get(arg)
                 if value:
                     self.set(arg, value)
 
-    def _load_options_from_file(self, json_file_path: str = None) -> dict:
+    def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
         options = None
-        with open(json_file_path, "rb") as f:
+        with open(json_file_path, "r", encoding='UTF8') as f:
             options = json.load(f)
+        return options
+
+    def _load_options_from_yaml_file(self, yaml_file_path: str = None) -> dict:
+        options = None
+        with open(yaml_file_path, "r", encoding='UTF8') as f:
+            options = yaml.safe_load(f)
         return options
 
     def get(self, key: str, default_value: typing.Any = None):
