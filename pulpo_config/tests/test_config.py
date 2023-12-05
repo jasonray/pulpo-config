@@ -242,12 +242,12 @@ class TestConfig(unittest.TestCase):
         config.set('parent.k3', 'v3')
         config.set('parent.parent2.k4', 'v4')
         config.set('parent.parent2.k5', 'v5')
-        print(f"{config.keys=}")
-        self.assertIn('k1', config.keys)
-        self.assertIn('parent.k2', config.keys)
-        self.assertIn('parent.k3', config.keys)
-        self.assertIn('parent.parent2.k4', config.keys)
-        self.assertIn('parent.parent2.k5', config.keys)
+        print(f"{config.keys()=}")
+        self.assertIn('k1', config.keys())
+        self.assertIn('parent.k2', config.keys())
+        self.assertIn('parent.k3', config.keys())
+        self.assertIn('parent.parent2.k4', config.keys())
+        self.assertIn('parent.parent2.k5', config.keys())
 
     def test_config_chain(self):
         options = {}

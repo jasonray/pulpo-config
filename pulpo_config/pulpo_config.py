@@ -9,6 +9,8 @@ import yaml
 class Config():
     __options = None
 
+    UTF8 = 'UTF-8'
+
     def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):
         self.__options = {}
 
@@ -36,7 +38,7 @@ class Config():
     def fromOptions(self, options: dict = None) -> 'Config':
         # this is necessary to get the nest config keys
         sourceConfig = Config(options=options)
-        sourceKeys = sourceConfig.keys
+        sourceKeys = sourceConfig.keys()
 
         for key in sourceKeys:
             value = sourceConfig.get(key)
@@ -52,7 +54,7 @@ class Config():
 
     def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
         options = None
-        with open(json_file_path, "r", encoding='UTF8') as f:
+        with open(json_file_path, "r", encoding=self.UTF8) as f:
             options = json.load(f)
         return options
 
@@ -60,8 +62,8 @@ class Config():
         return self.fromOptions(self._load_options_from_yaml_file(yaml_file_path=file_path))
 
     def _load_options_from_yaml_file(self, yaml_file_path: str = None) -> dict:
-        options = None
-        with open(yaml_file_path, "r", encoding='UTF8') as f:
+        options = None        
+        with open(yaml_file_path, "r", encoding=self.UTF8) as f:
             options = yaml.safe_load(f)
         return options
 
@@ -79,7 +81,6 @@ class Config():
                     self.set(arg, value)
         return self
 
-    @property
     def keys(self):
         return self._build_keys(self.__options, None)
 
