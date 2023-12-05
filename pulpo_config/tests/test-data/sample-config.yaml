@@ -5,3 +5,4 @@ file_queue_adapter:
         skip_random_messages_range: 0
         message_format: "json"
         enable_history: "True"
+tag: "yaml"
