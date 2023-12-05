@@ -53,13 +53,13 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(config.get('k.k2b.k3.x'))
         self.assertIsNone(config.get('k.k2b.x.x'))
 
-    def test_load_config_from_file(self):
+    def test_load_config_from_json_file(self):
         config = Config(json_file_path='./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
 
-    def test_load_config_from_file_then_apply_args(self):
+    def test_load_config_from_json_file_then_apply_args(self):
         config = Config(json_file_path='./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
@@ -68,10 +68,16 @@ class TestConfig(unittest.TestCase):
         args['shutdown_after_number_of_empty_iterations'] = 10
         args['file_queue_adapter.base_path'] = '/t/k/fqa'
 
-        config.process_args(args)
+        config.fromArgumentParser(args)
 
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/t/k/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/t/k/fqa')
+
+    def test_load_config_from_yaml_file(self):
+        config = Config(yaml_file_path='./pulpo_config/tests/test-data/sample-config.yaml')
+        self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
+        self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
+        self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
 
     # disable yapf so it does not re-format the param test
     # yapf: disable
@@ -229,19 +235,102 @@ class TestConfig(unittest.TestCase):
         options['database']['host'] = '127.0.0.1'
         self.assertEqual(config.get('database.host'), 'localhost')
 
-    def test_config_get_keys_one(self):
+    def test_get_keys(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.keys()=}")
+        self.assertIn('k1', config.keys())
+        self.assertIn('parent.k2', config.keys())
+        self.assertIn('parent.k3', config.keys())
+        self.assertIn('parent.parent2.k4', config.keys())
+        self.assertIn('parent.parent2.k5', config.keys())
+
+    def test_get_values(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.values()=}")
+        self.assertIn('v1', config.values()['k1'])
+        self.assertIn('v2', config.values()['parent.k2'])
+
+    def test_config_chain(self):
         options = {}
         options['k'] = 'v'
-        config = Config(options)
-        self.assertEqual(len(config.keys()), 1)
-        self.assertEqual(config.keys(), ['k'])
-        self.assertEqual(config.items(), {'k': 'v'})
 
-    def test_config_get_keys_two(self):
+        config = Config().fromOptions(options)
+        self.assertEqual(config.get('k'), 'v')
+
+        config = Config().fromOptions(options).fromKeyValue('k2', 'v2')
+        self.assertEqual(config.get('k'), 'v')
+        self.assertEqual(config.get('k2'), 'v2')
+
+        config = Config().fromOptions(options).fromKeyValue('k2', 'v2').fromJsonFile('./pulpo_config/tests/test-data/sample-config.json')
+        self.assertEqual(config.get('k'), 'v')
+        self.assertEqual(config.get('k2'), 'v2')
+        self.assertEqual(config.get('queue_adapter_type'), 'FileQueueAdapter')
+
+        config = Config().fromJsonFile('./pulpo_config/tests/test-data/sample-config.json').fromYamlFile('./pulpo_config/tests/test-data/sample-config.yaml')
+        self.assertEqual(config.get('tag'), 'yaml')
+
+        config = Config().fromYamlFile('./pulpo_config/tests/test-data/sample-config.yaml').fromJsonFile('./pulpo_config/tests/test-data/sample-config.json')
+        self.assertEqual(config.get('tag'), 'json')
+
+        options1 = {}
+        options1['k1'] = 'v1.1'
+        options1['k2'] = 'v1.1'
+        options2 = {}
+        options2['k1'] = 'v1.2'
+
+        config = Config().fromOptions(options1)
+        self.assertEqual(config.get('k1'), 'v1.1')
+        self.assertEqual(config.get('k2'), 'v1.1')
+
+        config = Config().fromOptions(options1).fromOptions(options2)
+        self.assertEqual(config.get('k1'), 'v1.2')
+        self.assertEqual(config.get('k2'), 'v1.1')
+
         options = {}
-        options['k1'] = 'v1'
-        options['k2'] = 'v2'
-        config = Config(options)
-        self.assertEqual(len(config.keys()), 2)
-        self.assertEqual(config.keys(), ['k1','k2'])
-        self.assertEqual(config.items(), {'k1': 'v1', 'k2': 'v2'})
+        options['k'] = {'k2': 'v'}
+        config = Config(options=options)
+        self.assertEqual(config.get('k.k2'), 'v')
+
+        options1 = {}
+        options1['parent'] = {'k1': 'v1.1', 'k2': 'v1.1'}
+        options2 = {}
+        options2['parent'] = {'k1': 'v1.2'}
+
+        config = Config().fromOptions(options1)
+        self.assertEqual(config.get('parent.k1'), 'v1.1')
+        self.assertEqual(config.get('parent.k2'), 'v1.1')
+
+        config = Config().fromOptions(options1).fromOptions(options2)
+        self.assertEqual(config.get('parent.k1'), 'v1.2')
+        self.assertEqual(config.get('parent.k2'), 'v1.1')
+
+    def test_get_keys(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.keys()=}")
+
+        found_k1 = False
+        found_k2 = False
+        print('loop config')
+        for key in config:
+            print(f'key: {key}')
+            if key == 'k1':
+                found_k1 = True
+            if key == 'parent.k2':
+                found_k2 = True
+        self.assertTrue(found_k1)
+        self.assertTrue(found_k2)
