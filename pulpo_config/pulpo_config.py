@@ -28,7 +28,7 @@ class Config():
 
     def __str__(self):
         return self.to_string()
-    
+
     def __iter__(self):
         return iter(self.keys())
 
@@ -88,7 +88,7 @@ class Config():
         return self._build_key_list(self.__options, None)
 
     def values(self):
-        return self._build_key_list(self.__options, None)
+        return self._build_value_list(self.keys())
 
     def _build_key_list(self, options: dict, parent_key_list=None):
         if not parent_key_list:
