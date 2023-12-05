@@ -50,8 +50,20 @@ class Config():
     def fromJsonFile(self, file_path: str) -> 'Config':
         return self.fromOptions(self._load_options_from_json_file(json_file_path=file_path))
 
+    def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
+        options = None
+        with open(json_file_path, "r", encoding='UTF8') as f:
+            options = json.load(f)
+        return options
+
     def fromYamlFile(self, file_path: str) -> 'Config':
         return self.fromOptions(self._load_options_from_yaml_file(yaml_file_path=file_path))
+
+    def _load_options_from_yaml_file(self, yaml_file_path: str = None) -> dict:
+        options = None
+        with open(yaml_file_path, "r", encoding='UTF8') as f:
+            options = yaml.safe_load(f)
+        return options
 
     def fromArgumentParser(self, args: dict) -> 'Config':
         if args:
@@ -87,18 +99,6 @@ class Config():
             else:
                 key_list.append(full_key_name)
         return key_list
-
-    def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
-        options = None
-        with open(json_file_path, "r", encoding='UTF8') as f:
-            options = json.load(f)
-        return options
-
-    def _load_options_from_yaml_file(self, yaml_file_path: str = None) -> dict:
-        options = None
-        with open(yaml_file_path, "r", encoding='UTF8') as f:
-            options = yaml.safe_load(f)
-        return options
 
     def get(self, key: str, default_value: typing.Any = None):
         keys = key.split('.')
