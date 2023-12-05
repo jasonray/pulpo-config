@@ -92,12 +92,6 @@ config = Config().fromOptions(options).fromKeyValue('k', 'v').fromJsonFile('conf
 * `fromArgumentParser(self, args: dict)`
   * load `Config` with command line arguments.
   * `args` can be either `argparser` or `argparser.namepspace` (the output from `argparser.parse()`)
-
-
- 
-## process_args
-Passing a standard `argparser` or `argparser.namepspace` will integrate command line params into the config values
-* `process_args(self, args: dict)`
  
 ## Set
 * `set(key: str, value: typing.Any)`
@@ -114,6 +108,11 @@ Passing a standard `argparser` or `argparser.namepspace` will integrate command 
 * There are also specialized get methods to cast values to specific types
 * `getAsBool(self, key: str, default_value: typing.Any = None) -> bool`
 * `getAsInt(self, key: str, default_value: int = None) -> int`
+
+## Keys, Values, Iterator
+* `keys`: returns a list of keys.  If the options are nested, will return in dot notation (i.e. `['parent.k1', 'parent.k2']`)
+* `values`: returns a dictionary with all key-value pairs.If the options are nested, will return in dot notation (i.e. `{'parent.k1': 'v1', 'parent.k2': 'v2'}`)
+* `__iter__`: iterates over the list of keys (`for key in config`)
 
 # More Usage Patterns
 
