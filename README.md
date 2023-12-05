@@ -74,11 +74,30 @@ In this library, I use the following terms:
   * If `options` supplied, will initialize with the supplied key-value pairs.  Note that this does support nest key-value structures.
   * What if `options` is modified after being used to initialize `Config`?  Read [here]([url](https://github.com/jasonray/pulpo-config/issues/26)).
   * If `json_file_path` will load values from json formatted config file
+
+## Load from sources
+There are a set of methods to load from others sources.  Each for these will copy key-value pairs from parameter to `Config` and return the instance of `Config` (to support chain calls).  For example:
+``` python
+config = Config().fromOptions(options).fromKeyValue('k', 'v').fromJsonFile('config.json')
+```
+
+* `fromOptions(self, options: dict = None)`
+  * load `Config` with the supplied key-value pairs.  Note that this does support nest key-value structures.
+* `fromKeyValue(self, key: str, value: typing.Any)`
+  * load `Config` with the supplied key-value pair.
+* `fromJsonFile(self, file_path: str)`
+  * load `Config` with the content from the supplied json file
+* `fromYamlFile(self, file_path: str)`
+  * load `Config` with the content from the supplied yaml file
+* `fromArgumentParser(self, args: dict)`
+  * load `Config` with command line arguments.
+  * `args` can be either `argparser` or `argparser.namepspace` (the output from `argparser.parse()`)
+
+
  
 ## process_args
 Passing a standard `argparser` or `argparser.namepspace` will integrate command line params into the config values
 * `process_args(self, args: dict)`
-  * `args` can be either `argparser` or `argparser.namepspace` (the output from `argparser.parse()`
  
 ## Set
 * `set(key: str, value: typing.Any)`
