@@ -9,7 +9,21 @@ import yaml
 class Config():
     __options = None
 
-    def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):
+    def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):        
+        self.__options = {}
+
+        if options:
+            if isinstance(options, dict):
+                self.__options = copy.deepcopy(options)
+            elif isinstance(options, Config):
+                self.__options = options.__options
+                    
+        if json_file_path:
+            self.fromJsonFile(file_path=json_file_path)
+
+        if yaml_file_path:
+            self.fromYamlFile(file_path=yaml_file_path)
+
         if not options and json_file_path:
             options = self._load_options_from_json_file(json_file_path=json_file_path)
         elif not options and yaml_file_path:
@@ -31,7 +45,27 @@ class Config():
     def to_json(self):
         return json.dumps(self.__options)
 
-    def process_args(self, args: dict):
+    def fromOptions(self, options: dict = None) -> 'Config':
+        # this is necessary to get the nest config keys
+        sourceConfig = Config(options=options)
+        sourceKeys = sourceConfig.keys
+
+        for key in sourceKeys:
+            value = sourceConfig.get(key)
+            self.set(key, value)
+        return self
+
+    def fromKeyValue(self, key: str, value: typing.Any) -> 'Config':
+        self.set(key, value)
+        return self
+
+    def fromJsonFile(self, file_path: str) -> 'Config':
+        return self.fromOptions(self._load_options_from_json_file(json_file_path=file_path))
+
+    def fromYamlFile(self, file_path: str) -> 'Config':
+        return self.fromOptions(self._load_options_from_yaml_file(yaml_file_path=file_path))
+
+    def fromArgumentParser(self, args: dict) -> 'Config':
         if args:
             if isinstance(args, argparse.ArgumentParser):
                 args = args.parse_args()
@@ -43,6 +77,28 @@ class Config():
                 value = args.get(arg)
                 if value:
                     self.set(arg, value)
+        return self
+
+    @property
+    def keys(self):
+        return self._build_keys(self.__options, None)
+
+    def _build_keys(self, options: dict, parent_key_list=[]):
+        if not parent_key_list:
+            parent_key_list = []
+
+        key_list = []
+        for key in options:
+            key_parts = parent_key_list.copy()
+            key_parts.append(key)
+            full_key_name = ".".join(key_parts)
+            value = self.get(full_key_name)
+            if isinstance(value, dict):
+                child_keys = self._build_keys(options=value, parent_key_list=key_parts)
+                key_list += child_keys
+            else:
+                key_list.append(full_key_name)
+        return key_list
 
     def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
         options = None

@@ -68,7 +68,7 @@ class TestConfig(unittest.TestCase):
         args['shutdown_after_number_of_empty_iterations'] = 10
         args['file_queue_adapter.base_path'] = '/t/k/fqa'
 
-        config.process_args(args)
+        config.fromArgumentParser(args)
 
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/t/k/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/t/k/fqa')
@@ -234,3 +234,71 @@ class TestConfig(unittest.TestCase):
 
         options['database']['host'] = '127.0.0.1'
         self.assertEqual(config.get('database.host'), 'localhost')
+
+    def test_get_keys(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.keys=}")
+        self.assertIn('k1', config.keys)
+        self.assertIn('parent.k2', config.keys)
+        self.assertIn('parent.k3', config.keys)
+        self.assertIn('parent.parent2.k4', config.keys)
+        self.assertIn('parent.parent2.k5', config.keys)
+
+    def test_config_chain(self):
+        options = {}
+        options['k'] = 'v'
+
+        config = Config().fromOptions(options)
+        self.assertEqual(config.get('k'), 'v')
+
+        config = Config().fromOptions(options).fromKeyValue('k2', 'v2')
+        self.assertEqual(config.get('k'), 'v')
+        self.assertEqual(config.get('k2'), 'v2')
+
+        config = Config().fromOptions(options).fromKeyValue('k2', 'v2').fromJsonFile('./pulpo_config/tests/test-data/sample-config.json')
+        self.assertEqual(config.get('k'), 'v')
+        self.assertEqual(config.get('k2'), 'v2')
+        self.assertEqual(config.get('queue_adapter_type'), 'FileQueueAdapter')
+
+        config = Config().fromJsonFile('./pulpo_config/tests/test-data/sample-config.json').fromYamlFile('./pulpo_config/tests/test-data/sample-config.yaml')
+        self.assertEqual(config.get('tag'), 'yaml')
+
+        config = Config().fromYamlFile('./pulpo_config/tests/test-data/sample-config.yaml').fromJsonFile('./pulpo_config/tests/test-data/sample-config.json')
+        self.assertEqual(config.get('tag'), 'json')
+
+        options1 = {}
+        options1['k1'] = 'v1.1'
+        options1['k2'] = 'v1.1'
+        options2 = {}
+        options2['k1'] = 'v1.2'
+
+        config = Config().fromOptions(options1)
+        self.assertEqual(config.get('k1'), 'v1.1')
+        self.assertEqual(config.get('k2'), 'v1.1')
+
+        config = Config().fromOptions(options1).fromOptions(options2)
+        self.assertEqual(config.get('k1'), 'v1.2')
+        self.assertEqual(config.get('k2'), 'v1.1')
+
+        options = {}
+        options['k'] = {'k2': 'v'}
+        config = Config(options=options)
+        self.assertEqual(config.get('k.k2'), 'v')
+
+        options1 = {}
+        options1['parent'] = {'k1': 'v1.1', 'k2': 'v1.1'}
+        options2 = {}
+        options2['parent'] = {'k1': 'v1.2'}
+
+        config = Config().fromOptions(options1)
+        self.assertEqual(config.get('parent.k1'), 'v1.1')
+        self.assertEqual(config.get('parent.k2'), 'v1.1')
+
+        config = Config().fromOptions(options1).fromOptions(options2)
+        self.assertEqual(config.get('parent.k1'), 'v1.2')
+        self.assertEqual(config.get('parent.k2'), 'v1.1')
