@@ -24,18 +24,6 @@ class Config():
         if yaml_file_path:
             self.fromYamlFile(file_path=yaml_file_path)
 
-        if not options and json_file_path:
-            options = self._load_options_from_json_file(json_file_path=json_file_path)
-        elif not options and yaml_file_path:
-            options = self._load_options_from_yaml_file(yaml_file_path=yaml_file_path)
-        elif not options:
-            options = {}
-
-        if isinstance(options, dict):
-            self.__options = copy.deepcopy(options)
-        elif isinstance(options, Config):
-            self.__options = options.__options
-
     def __str__(self):
         return self.to_string()
 
@@ -83,7 +71,7 @@ class Config():
     def keys(self):
         return self._build_keys(self.__options, None)
 
-    def _build_keys(self, options: dict, parent_key_list=[]):
+    def _build_keys(self, options: dict, parent_key_list=None):
         if not parent_key_list:
             parent_key_list = []
 
