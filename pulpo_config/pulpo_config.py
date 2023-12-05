@@ -9,6 +9,8 @@ import yaml
 class Config():
     __options = None
 
+    UTF8 = 'UTF-8'
+
     def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):
         self.__options = {}
 
@@ -27,6 +29,9 @@ class Config():
     def __str__(self):
         return self.to_string()
 
+    def __iter__(self):
+        return iter(self.keys())
+
     def to_string(self):
         return str(self.__options)
 
@@ -36,7 +41,7 @@ class Config():
     def fromOptions(self, options: dict = None) -> 'Config':
         # this is necessary to get the nest config keys
         sourceConfig = Config(options=options)
-        sourceKeys = sourceConfig.keys
+        sourceKeys = sourceConfig.keys()
 
         for key in sourceKeys:
             value = sourceConfig.get(key)
@@ -52,7 +57,7 @@ class Config():
 
     def _load_options_from_json_file(self, json_file_path: str = None) -> dict:
         options = None
-        with open(json_file_path, "r", encoding='UTF8') as f:
+        with open(json_file_path, "r", encoding=self.UTF8) as f:
             options = json.load(f)
         return options
 
@@ -61,7 +66,7 @@ class Config():
 
     def _load_options_from_yaml_file(self, yaml_file_path: str = None) -> dict:
         options = None
-        with open(yaml_file_path, "r", encoding='UTF8') as f:
+        with open(yaml_file_path, "r", encoding=self.UTF8) as f:
             options = yaml.safe_load(f)
         return options
 
@@ -79,11 +84,13 @@ class Config():
                     self.set(arg, value)
         return self
 
-    @property
     def keys(self):
-        return self._build_keys(self.__options, None)
+        return self._build_key_list(self.__options, None)
 
-    def _build_keys(self, options: dict, parent_key_list=None):
+    def values(self):
+        return self._build_value_list(self.keys())
+
+    def _build_key_list(self, options: dict, parent_key_list=None):
         if not parent_key_list:
             parent_key_list = []
 
@@ -94,11 +101,18 @@ class Config():
             full_key_name = ".".join(key_parts)
             value = self.get(full_key_name)
             if isinstance(value, dict):
-                child_keys = self._build_keys(options=value, parent_key_list=key_parts)
+                child_keys = self._build_key_list(options=value, parent_key_list=key_parts)
                 key_list += child_keys
             else:
                 key_list.append(full_key_name)
         return key_list
+
+    def _build_value_list(self, keys):
+        values = {}
+        for key in keys:
+            value = self.get(key)
+            values[key] = value
+        return values
 
     def get(self, key: str, default_value: typing.Any = None):
         keys = key.split('.')

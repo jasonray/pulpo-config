@@ -242,12 +242,23 @@ class TestConfig(unittest.TestCase):
         config.set('parent.k3', 'v3')
         config.set('parent.parent2.k4', 'v4')
         config.set('parent.parent2.k5', 'v5')
-        print(f"{config.keys=}")
-        self.assertIn('k1', config.keys)
-        self.assertIn('parent.k2', config.keys)
-        self.assertIn('parent.k3', config.keys)
-        self.assertIn('parent.parent2.k4', config.keys)
-        self.assertIn('parent.parent2.k5', config.keys)
+        print(f"{config.keys()=}")
+        self.assertIn('k1', config.keys())
+        self.assertIn('parent.k2', config.keys())
+        self.assertIn('parent.k3', config.keys())
+        self.assertIn('parent.parent2.k4', config.keys())
+        self.assertIn('parent.parent2.k5', config.keys())
+
+    def test_get_values(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.values()=}")
+        self.assertIn('v1', config.values()['k1'])
+        self.assertIn('v2', config.values()['parent.k2'])
 
     def test_config_chain(self):
         options = {}
@@ -302,3 +313,24 @@ class TestConfig(unittest.TestCase):
         config = Config().fromOptions(options1).fromOptions(options2)
         self.assertEqual(config.get('parent.k1'), 'v1.2')
         self.assertEqual(config.get('parent.k2'), 'v1.1')
+
+    def test_get_keys(self):
+        config = Config()
+        config.set('k1', 'v1')
+        config.set('parent.k2', 'v2')
+        config.set('parent.k3', 'v3')
+        config.set('parent.parent2.k4', 'v4')
+        config.set('parent.parent2.k5', 'v5')
+        print(f"{config.keys()=}")
+
+        found_k1 = False
+        found_k2 = False
+        print('loop config')
+        for key in config:
+            print(f'key: {key}')
+            if key == 'k1':
+                found_k1 = True
+            if key == 'parent.k2':
+                found_k2 = True
+        self.assertTrue(found_k1)
+        self.assertTrue(found_k2)
