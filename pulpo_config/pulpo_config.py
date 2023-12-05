@@ -9,7 +9,7 @@ import yaml
 class Config():
     __options = None
 
-    def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):        
+    def __init__(self, options: dict = None, json_file_path: str = None, yaml_file_path: str = None):
         self.__options = {}
 
         if options:
@@ -17,7 +17,7 @@ class Config():
                 self.__options = copy.deepcopy(options)
             elif isinstance(options, Config):
                 self.__options = options.__options
-                    
+
         if json_file_path:
             self.fromJsonFile(file_path=json_file_path)
 
