@@ -103,15 +103,15 @@ config = Config().fromOptions(options).fromKeyValue('k', 'v').fromJsonFile('conf
   * load `Config` with the supplied key-value pairs.  Note that this does support nest key-value structures.
 * `fromKeyValue(self, key: str, value: typing.Any)`
   * load `Config` with the supplied key-value pair.
+* `fromKeyValueList(self, key_value_list)`
+  * load `Config` with supplied key-value pairs.
 * `fromJsonFile(self, file_path: str)`
-  * load `Config` with the content from the supplied json file
+  * load `Config` with the content from the supplied json file.
 * `fromYamlFile(self, file_path: str)`
-  * load `Config` with the content from the supplied yaml file
+  * load `Config` with the content from the supplied yaml file.
 * `fromArgumentParser(self, args: dict)`
   * load `Config` with command line arguments.
   * `args` can be either `argparser` or `argparser.namepspace` (the output from `argparser.parse()`)
-
-
  
 ## process_args
 Passing a standard `argparser` or `argparser.namepspace` will integrate command line params into the config values
@@ -140,7 +140,19 @@ Passing a standard `argparser` or `argparser.namepspace` will integrate command 
 
 # More Usage Patterns
 
-## Manually loading from dictionary
+## Loading from dictionary
+
+### Using fromOptions
+``` python
+from pulpo_config import Config
+options={"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
+config = Config().fromOptions(options)
+
+api_key = config.get("api_key")    
+host = config.get("database.host")   
+```
+
+### Using constructor
 ``` python
 from pulpo_config import Config
 config = Config(options={"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
@@ -173,7 +185,7 @@ Most use cases will utilize a config file to store options.  Below is a sample c
 Load this config file named `config.json` using the following:
 ```
 from pulpo_config import Config
-config = Config(json_file_path="config.json")
+config = Config().fromJsonFile(file_path='config.json')
 api_key = config.get("api_key")
 host = config.get("database.host")    
 ```
@@ -185,7 +197,7 @@ from pulpo_config import Config
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--api_key', type=str)
-config.process_args(parser)
+config = Config().fromArgumentParser(parser)
 api_key = config.get("api_key")
 ```
 

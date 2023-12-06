@@ -52,6 +52,11 @@ class Config():
         self.set(key, value)
         return self
 
+    def fromKeyValueList(self, key_value_list) -> 'Config':
+        for key, value in key_value_list:
+            self.set(key, value)
+        return self
+
     def fromJsonFile(self, file_path: str) -> 'Config':
         return self.fromOptions(self._load_options_from_json_file(json_file_path=file_path))
 

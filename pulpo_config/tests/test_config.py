@@ -53,8 +53,14 @@ class TestConfig(unittest.TestCase):
         self.assertIsNone(config.get('k.k2b.k3.x'))
         self.assertIsNone(config.get('k.k2b.x.x'))
 
-    def test_load_config_from_json_file(self):
+    def test_load_config_constuctor_json_file(self):
         config = Config(json_file_path='./pulpo_config/tests/test-data/sample-config.json')
+        self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
+        self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
+        self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
+
+    def test_load_config_from_json_file(self):
+        config = Config().fromJsonFile(file_path='./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('shutdown_after_number_of_empty_iterations'), 7)
         self.assertEqual(config.get('file_queue_adapter.base_path'), '/tmp/kessel/fqa')
         self.assertEqual(config.get('file_queue_adapter').get('base_path'), '/tmp/kessel/fqa')
@@ -260,6 +266,18 @@ class TestConfig(unittest.TestCase):
         self.assertIn('v1', config.values()['k1'])
         self.assertIn('v2', config.values()['parent.k2'])
 
+    def test_fromOption(self):        
+        from pulpo_config import Config
+        options={"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
+        config = Config().fromOptions(options)
+
+        api_key = config.get("api_key")    
+        host = config.get("database.host")   
+
+        self.assertEqual(api_key, 'your-api-key') 
+        self.assertEqual(host, 'localhost') 
+
+
     def test_config_chain(self):
         options = {}
         options['k'] = 'v'
@@ -281,6 +299,12 @@ class TestConfig(unittest.TestCase):
 
         config = Config().fromYamlFile('./pulpo_config/tests/test-data/sample-config.yaml').fromJsonFile('./pulpo_config/tests/test-data/sample-config.json')
         self.assertEqual(config.get('tag'), 'json')
+
+        config = Config().fromOptions(options).fromKeyValue('k2', 'v2').fromKeyValueList([('k3', 'v3'), ('k4', 'v4'), ('k', 'new-value')])
+        self.assertEqual(config.get('k2'), 'v2')
+        self.assertEqual(config.get('k3'), 'v3')
+        self.assertEqual(config.get('k4'), 'v4')
+        self.assertEqual(config.get('k'), 'new-value')
 
         options1 = {}
         options1['k1'] = 'v1.1'
