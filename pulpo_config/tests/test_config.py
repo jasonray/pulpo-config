@@ -266,17 +266,16 @@ class TestConfig(unittest.TestCase):
         self.assertIn('v1', config.values()['k1'])
         self.assertIn('v2', config.values()['parent.k2'])
 
-    def test_fromOption(self):        
+    def test_fromOption(self):
         from pulpo_config import Config
-        options={"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
+        options = {"api_key": "your-api-key", "database": {"host": "localhost", "port": 3306}}
         config = Config().fromOptions(options)
 
-        api_key = config.get("api_key")    
-        host = config.get("database.host")   
+        api_key = config.get("api_key")
+        host = config.get("database.host")
 
-        self.assertEqual(api_key, 'your-api-key') 
-        self.assertEqual(host, 'localhost') 
-
+        self.assertEqual(api_key, 'your-api-key')
+        self.assertEqual(host, 'localhost')
 
     def test_config_chain(self):
         options = {}
