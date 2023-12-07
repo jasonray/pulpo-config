@@ -20,4 +20,5 @@ setup(name='pulpo-config',
           'Operating System :: OS Independent',
       ],
       python_requires='>=3.6',
+      install_requires='pyyaml==6.0.1',
       keywords='configuration')
