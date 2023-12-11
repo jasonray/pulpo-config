@@ -22,7 +22,7 @@ lint-no-error:
 	pylint --exit-zero -r n pulpo_config
 
 test: build dev_deps
-	python3 -m pytest -v --durations=0
+	python3 -m pytest -v --cov=pulpo_config --cov-report html
 
 build: deps
 	# might re-add clean 
